@@ -1,3 +1,7 @@
+- [Introduction](#INTRODUCTION)  
+- [Use cases](#USE-CASES)
+	- test
+
 #### INTRODUCTION
 
 ---
@@ -57,7 +61,7 @@
 
 ---
 
-#### USE CASE
+#### USE CASES
 
 ---
 
