@@ -1,6 +1,7 @@
 - [Introduction](#INTRODUCTION)  
 - [Use cases](#USE-CASES)
-	- test
+	- [ ] 테스트 구현 해보기
+	- [ ] UML 다이어그램 그려보기
 
 #### INTRODUCTION
 
