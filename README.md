@@ -128,11 +128,11 @@
 
 > 커맨드(COMMAND) 패턴은 내가 가장 단순하면서도 세련된 것으로 보는 패턴이다. - *클린소프트웨어 p.199*
 
-UML Diagram
+**UML Diagram**
 
 ![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/Command.png)  
  
-Code Example
+**Code Example**
 ```swift
 protocol Command {
 	func execute()
