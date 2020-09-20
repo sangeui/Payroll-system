@@ -141,5 +141,7 @@ protocol Command {
 
 **Example**
 
+![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/CommandExample.png)
+
 ---
 
