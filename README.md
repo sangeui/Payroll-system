@@ -2,6 +2,8 @@
 - [Use cases](#USE-CASES)
 	- [ ] 테스트 구현 해보기
 	- [ ] UML 다이어그램 그려보기
+- [Design Patterns](#DESIGN-PATTERNS)
+	- Command & Active Object
 
 #### INTRODUCTION
 
@@ -118,3 +120,14 @@
 	```
 	Payday <날짜>
 	```
+
+---
+#### DESIGN PATTERNS
+
+***Command*** *Pattern*
+
+> 커맨드(COMMAND) 패턴은 내가 가장 단순하면서도 세련된 것으로 보는 패턴이다. - *클린소프트웨어 p.199*
+
+![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/Command.png)
+
+
