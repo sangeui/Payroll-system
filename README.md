@@ -128,7 +128,7 @@
 
 > 커맨드(COMMAND) 패턴은 내가 가장 단순하면서도 세련된 것으로 보는 패턴이다. - *클린소프트웨어 p.199*
 
-![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/Command.png "Test")
+![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/Command.png "Test" )
 
 ```swift
 protocol Command {
