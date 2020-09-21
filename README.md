@@ -152,7 +152,7 @@ protocol Command {
 
 ![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/CommandExample2.png)
 
-	위와 같은 직원들의 데이터베이스를 관리하는 시스템을 작성하고 있다고 했을 때, 사용자들은 이 데이터베이스를 이용하여 새 직원을 추가하고, 기존 직원을 삭제하고, 직원의 속성을 변경하는 등의 작업을 할 수 있다. 
+위와 같은 직원들의 데이터베이스를 관리하는 시스템을 작성하고 있다고 했을 때, 사용자들은 이 데이터베이스를 이용하여 새 직원을 추가하고, 기존 직원을 삭제하고, 직원의 속성을 변경하는 등의 작업을 할 수 있다. 
 
 
 
