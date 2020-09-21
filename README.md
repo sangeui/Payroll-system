@@ -139,9 +139,23 @@ protocol Command {
 }
 ```
 
-**Example**
+**Example-1**
 
 ![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/CommandExample.png)
 
+`Human` 객체는 `age` 값이 증가함에 따라 성장 단계를 의미하는 `growth` 값이 변경되고, 그에 맞는 행동을 한다. 
+이때, `Human` 은 단순히 `Command` 의 `execute` 를 호출하기만 하면 된다. 
+
+*Command_ActiveObject.playground 참조*
+
+**Example-2**
+
+![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/CommandExample2.png)
+
+	위와 같은 직원들의 데이터베이스를 관리하는 시스템을 작성하고 있다고 했을 때, 사용자들은 이 데이터베이스를 이용하여 새 직원을 추가하고, 기존 직원을 삭제하고, 직원의 속성을 변경하는 등의 작업을 할 수 있다. 
+
+
+
 ---
+
 
