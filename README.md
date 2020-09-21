@@ -183,8 +183,129 @@ protocol Transaction {
 
 **Example**
 
-`ActiveObjectEngine` 객체는 `Command` 객체의 연결 리스트를 유지한다. 사용자는 이 엔진에 새로운 명령을 추가할 수도 있고, `run()` 을 호출할 수도 있다. 
+`Engine` 객체는 `Command` 객체의 연결 리스트를 유지한다. 사용자는 이 엔진에 새로운 명령을 추가할 수도 있고, `run()` 을 호출할 수도 있다. 
 
 `run()` 은 단순히 각 명령을 실행하고 이를 제거하면서 연결 리스트를 훑어나가는 함수이다. 
 
+```swift
+class Engine {
+	var itsCommands = LinkedList<Command>()
+	func addCommand(_ command: Command) {
+		itsCommands.append(command)
+	}
+	func run() {
+		while (!itsCommands.isEmpty) {
+			let command = itsCommand.first!
+			itsCommands.pop()
+			command.execute()
+		}
+	}
+}
+```
 
+연결리스트 `itsCommands` 의 객체 중 하나가 자신을 복제하여 그 복제본을 다시 리스트에 넣는다면, `run()` 의 `while` 종료 조건인 비어 있는 연결리스트를 절대 충족하지 않으므로 `run()` 함수는 절대 종료되지 않는다. 
+
+아래의 `SleepCommand` 를 보자. 이는 `Command` 프로토콜을 따른다. 
+
+```swift
+protocol Command {
+	func execute()
+}
+class SleepCommand: Command {
+	private var wakeupCommand: Command
+	private var engine: Engine
+	private var sleepTime = 0
+	private var startTime = 0
+	private var started = false
+
+	init(delay: Int64, engine: Engine, command: Command) {
+		self.sleepTime = delay
+		self.engine = engine
+		self.wakeupCommand = command
+	}
+
+	func execute() {
+		// current(): 현재 시간을 `TimeStamp` 형태로 가져오는 커스텀 메소드
+		let currentTime = Date().current()
+		if started == false {
+			started = true
+			startTime = currentTime
+			engine.addCommand(self)
+		} else if currentTime - startTime < sleepTime {
+			engine.addCommand(self)
+		} else {
+			engine.addCommand(wakeupCommand)
+		}
+	}
+}
+```
+
+`SleepCommand` 는 실행이 되면 (`execute()`) 자신이 이전에 실행된 적이 있었는지 확인한다. 
+
+- 실행된 적이 없다면, `currentTime` 을 시작 시간으로 기록하고 자신을 다시 `engine` 에 넣는다.
+- 이전에 실행은 되었으나 `sleepTime` 만큼 지나지 않았다면, 자신을 다시 `engine` 에 넣는다.
+- 이전에 실행 되었으며 `sleepTime` 이 지났다면, 이번에는 `engine` 에 자신이 아니라 `wakeupCommand` 를 넣는다. 
+
+그러니까 `Engine` 의 입장에서는 `SleepCommand` 를 꺼내어 풀어주지만 정해진 시간이 지나지 않았다면 이 커맨드는 다시 들어오기 때문에, 계속 같은 `SleepCommand` 를 반복해서 실행하게 된다. 
+
+위와 같은 방식은 어떤 `이벤트`를 기다리는 `멀티스레드` 프로그램을 흉내낸 것이다. 이런 스레드는 각 `Command` 인스턴스가 다음 `Command` 인스턴스 실행이 가능해지기 전에 완료되기 때문에, `RTC(run-to-completion)` 태스크라는 이름으로 알려져 있다. 
+
+**Delay Typer Example**
+
+`Engine` 과 `Sleep Timer` 를 활용해서 문자를 출력하는 프로그램을 작성한다. 
+
+```swift
+class DelayedTyper: Command {
+	private static let engine = Engine()
+	private static var stop = false
+
+	private var delay: Int64
+	private var character: Character
+	// ...
+	func start() {
+		DelayedTyper.engine.addCommand(DelayedTyper(...))
+		DelayedTyper.engine.addCommand(DelayedTyper(...))
+		DelayedTyper.engine.addCommand(DelayedTyper(...))
+		DelayedTyper.engine.addCommand(DelayedTyper(...))
+
+		let stopCommand = Command(...)
+		DelayedTyper.engine.addCommand(SleepCommand(20000, DelayedTyper.engine, stopCommand)
+		DelayerTyper.engine.run()
+	}
+	// MARK: - 실행 메소드. 문자를 출력하고 `stop` 값에 따라 동작을 달리한다.
+	func execute() {
+		print(character)
+		if stop == false { delayAndRepeat() } 
+	}
+	// MARK: - 본 클래스 각각의 객체가 가지는 지연 시간 이후 다시 자신을 실행한다.
+	func delayAndRepeat() {
+		DelayedTyper.engine.addCommand(SleepCommand(...))
+	}
+}
+```
+
+`start()` 를 호출하면 선언된 `DelayedTyper` 객체를 `Engine` 에 차례대로 넣는다. 마지막으로 `stopCommand` 를 넣고 엔진을 실행한다. 
+
+우선 엔진의 `stopCommand` 앞에 위치한 모든 `DelayerTyper` 들이 실행된다. 이들 각각은 저마다의 `delayAndRepeat()` 를 호출한다. 이때 새롭게 만들어진 `SleepCommand` 는 엔진의 `stopCommand` 뒤에 추가된다. 
+
+이 행동을 `stopCommand` 가 실행될 때까지 반복한다. `stopCommand` 가 실행되면 `stop` 변수의 값을 바꾸고, 이는 더이상 `delayAndRepeat()` 을 호출하지 않도록 한다. 
+
+간단하게 말하면 `DelayedTyper` 는 문자를 출력하고 각자의 지연 시간 대기를 반복한다. 이후 `stopCommand` 가 실행되면 동작을 멈춘다.
+
+실제로 실행을 해보면 출력 결과가 서로 다르게 나타나는데, 
+
+**135711131151371113511131715...**
+**135711131151371113511131713...**
+
+위 두 결과에서 마지막 문자가 다르게 출력되었다.
+
+이는 CPU 클록과 실제 시간이 완벽하게 동기화되지 않기 때문에 나오는 결과라고 한다. 이러한 비결정적(nondeterministric) 행위는 멀티스레드 시스템의 특징이다.
+
+---
+
+**CONCLUSION - Command & Active Object**
+
+커맨트 패턴은 데이터베이스 트랜잭션, 멀티스레드 시스템 등 다양하게 사용될 수 있다. 
+커맨트 패턴은 클래스보다는 함수를 강조하여 객체 지향 패러다임을 망친다고 생각되지만, 실제로는 아주 유용하게 쓰일 수 있다고 한다. 
+
+---
