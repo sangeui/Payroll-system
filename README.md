@@ -146,7 +146,7 @@ protocol Command {
 `Human` 객체는 `age` 값이 증가함에 따라 성장 단계를 의미하는 `growth` 값이 변경되고, 그에 맞는 행동을 한다. 
 이때, `Human` 은 단순히 `Command` 의 `execute` 를 호출하기만 하면 된다. 
 
-*Command_ActiveObject.playground 참조*
+*Command_ActiveObject.playground-Command-Example1 참조*
 
 **Example-2**
 
@@ -154,8 +154,37 @@ protocol Command {
 
 위와 같은 직원들의 데이터베이스를 관리하는 시스템을 작성하고 있다고 했을 때, 사용자들은 이 데이터베이스를 이용하여 새 직원을 추가하고, 기존 직원을 삭제하고, 직원의 속성을 변경하는 등의 작업을 할 수 있다. 
 
+사용자가 새 직원을 추가해야 한다면, 직원 레코드 생성을 위한 모든 정보를 지정해야 한다. 시스템은 그 정보에 따라 동작하기 전에 그 정보가 올바른지 확인해야 하는데, 이때 커맨드 패턴이 사용될 수 있다. 
 
+`command` 객체는 검증되지 않은 데이터를 위한 저장소 역할을 하고, 검증 메소드를 구현하며, 마지막으로 트랜잭션을 실행하는 메소드를 구현한다. 
+
+```swift
+protocol Transaction {
+	func validate()
+	func execute()
+}
+```
+
+![the image for Command](https://github.com/sangeui/Payroll-system/blob/master/Resources/CommandExample3.png)
+
+`AddEmployeeTransaction` 은 `Employee` 가 포함하고 있는 것과 같은 데이터 필드를 갖고 있으며 `PayClassification` 도 가진다.
+
+`validate` 메소드를 통해 데이터가 올바른지 확인하고, 새 직원 추가 트랜잭션이므로 데이터베이스에 이미 해당하는 직원이 있는 건 아닌지 확인할 수도 있다. 
+
+`execute` 메소드는 `validate` 를 통해 확인이 완료된 올바른 데이터를 사용해 데이터베이스를 갱신한다. 새로운 `Employee` 객체가 이 트랜잭션의 데이터들을 이용해 생성될 것이며, `PayClassification` 객체는 `Employee` 객체 내부로 옮겨지거나 복사된다. 
+
+*Command_ActiveObject.playground-Command-Example2 참조*
 
 ---
+
+#### ***Active Object*** *Pattern*
+
+> 이 패턴은 역사가 아주 오래된 다중 제어 스레드(thread) 구현을 위한 기법이다. 이것은 여러 가지 형태로 수천 개의 산업 시스템에서 단순한 멀티태스킹(multitasking)의 핵심부가 되어왔다. 
+
+**Example**
+
+`ActiveObjectEngine` 객체는 `Command` 객체의 연결 리스트를 유지한다. 사용자는 이 엔진에 새로운 명령을 추가할 수도 있고, `run()` 을 호출할 수도 있다. 
+
+`run()` 은 단순히 각 명령을 실행하고 이를 제거하면서 연결 리스트를 훑어나가는 함수이다. 
 
 
